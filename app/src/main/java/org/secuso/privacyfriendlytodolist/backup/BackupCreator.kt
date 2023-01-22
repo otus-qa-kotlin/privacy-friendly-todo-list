@@ -2,9 +2,10 @@ package org.secuso.privacyfriendlytodolist.backup
 
 import android.content.Context
 import android.content.Intent
-import android.content.Intent.*
-import android.database.sqlite.SQLiteDatabase
-import android.os.Looper
+import android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK
+import android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP
+import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
+import android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP
 import android.preference.PreferenceManager
 import android.util.JsonWriter
 import android.util.Log
@@ -15,10 +16,9 @@ import org.secuso.privacyfriendlybackup.api.backup.DatabaseUtil
 import org.secuso.privacyfriendlybackup.api.backup.DatabaseUtil.writeDatabase
 import org.secuso.privacyfriendlybackup.api.backup.PreferenceUtil.writePreferences
 import org.secuso.privacyfriendlybackup.api.pfa.IBackupCreator
-import org.secuso.privacyfriendlytodolist.model.database.DatabaseHelper.DATABASE_NAME
+import org.secuso.privacyfriendlytodolist.model.database.DatabaseHelper.Companion.DATABASE_NAME
 import org.secuso.privacyfriendlytodolist.util.PinUtil.hasPin
 import org.secuso.privacyfriendlytodolist.view.PinActivity
-import org.secuso.privacyfriendlytodolist.view.dialog.PinDialog
 import java.io.OutputStream
 import java.io.OutputStreamWriter
 import java.nio.charset.Charset
@@ -27,7 +27,7 @@ class BackupCreator : IBackupCreator {
     override fun writeBackup(context: Context, outputStream: OutputStream) : Boolean {
         return runBlocking {
 
-            val pinCheck = async<Boolean> {
+            val pinCheck = async {
                 // check if a pin is set and validate it first
                 if(hasPin(context)) {
                     // wait for pin

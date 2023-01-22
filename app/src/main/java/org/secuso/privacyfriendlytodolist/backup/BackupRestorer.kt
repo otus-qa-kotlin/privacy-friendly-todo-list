@@ -1,16 +1,13 @@
 package org.secuso.privacyfriendlytodolist.backup
 
 import android.content.Context
-import android.database.sqlite.SQLiteDatabase
 import android.preference.PreferenceManager
 import android.util.JsonReader
 import org.secuso.privacyfriendlybackup.api.backup.DatabaseUtil
 import org.secuso.privacyfriendlybackup.api.backup.DatabaseUtil.readDatabaseContent
 import org.secuso.privacyfriendlybackup.api.backup.FileUtil.copyFile
-import org.secuso.privacyfriendlybackup.api.backup.FileUtil.readPath
 import org.secuso.privacyfriendlybackup.api.pfa.IBackupRestorer
-import org.secuso.privacyfriendlytodolist.model.database.DatabaseHelper.DATABASE_NAME
-import java.io.File
+import org.secuso.privacyfriendlytodolist.model.database.DatabaseHelper.Companion.DATABASE_NAME
 import java.io.IOException
 import java.io.InputStream
 import java.io.InputStreamReader
@@ -29,7 +26,11 @@ class BackupRestorer : IBackupRestorer {
         if (n2 != "content") {
             throw java.lang.RuntimeException("Unknown value $n2")
         }
-        val db = DatabaseUtil.getSupportSQLiteOpenHelper(context, "restoreDatabase", version).writableDatabase
+        val db = DatabaseUtil.getSupportSQLiteOpenHelper(
+            context,
+            "restoreDatabase",
+            version
+        ).writableDatabase
         db.beginTransaction()
         db.version = version
         readDatabaseContent(reader, db)
@@ -50,7 +51,11 @@ class BackupRestorer : IBackupRestorer {
         val pref = PreferenceManager.getDefaultSharedPreferences(context).edit()
         while (reader.hasNext()) {
             when (val name = reader.nextName()) {
-                "pref_pin_enabled", "notify", "pref_progress" -> pref.putBoolean(name, reader.nextBoolean())
+                "pref_pin_enabled", "notify", "pref_progress" -> pref.putBoolean(
+                    name,
+                    reader.nextBoolean()
+                )
+
                 "pref_pin" -> pref.putString(name, reader.nextString()) // TODO maybe leave this out
                 "pref_default_reminder_time" -> pref.putLong(name, reader.nextLong())
                 else -> throw java.lang.RuntimeException("Unknown preference $name")
